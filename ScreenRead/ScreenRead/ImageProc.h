@@ -3,6 +3,10 @@
 #include <iostream>
 #include <Windows.h>
 #include <set>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <stdio.h>       // for memset
 #define BYTESPERPIXEL 4
 extern int SCREENWIDTH;
 extern int SCREENHEIGHT;
@@ -45,7 +49,7 @@ public:
 		//	lpvBITBUF = new LPVOID;
 		bmpBuffer = (BYTE*)GlobalAlloc(GPTR, SCREENWIDTH*SCREENHEIGHT * 4);
 		GetBitmapBits(Teemo, numBits, bmpBuffer);
-		SaveToFile(Teemo, L"Teemo.bmp");
+		//SaveToFile(Teemo, L"Teemo.bmp");
 		ReleaseDC(NULL, desktophandle);
 		DeleteDC(memHDC);
 	}
@@ -55,7 +59,7 @@ public:
 		//	delete lpvBITBUF;
 		GlobalFree(bmpBuffer);
 	}
-	std::set<COORD> FindBMP(LPCTSTR testBMP);
+	std::vector<COORD> FindBMP(LPCTSTR testBMP);
 	//allocates and returns a byte array of a subBMP
 
 	RGBA getPixel(int x, int y)

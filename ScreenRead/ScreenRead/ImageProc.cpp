@@ -1,7 +1,5 @@
 
 #include "ImageProc.h"
-#include <iostream>
-#include <stdio.h>       // for memset
 using namespace std;
 int SCREENWIDTH = 0;
 int SCREENHEIGHT = 0;
@@ -136,7 +134,7 @@ BOOL SaveToFile(HBITMAP hBitmap, LPCTSTR lpszFileName)
 
 	HANDLE fh, hDib, hPal, hOldPal = NULL;
 
-	hDC = CreateDC(L"DISPLAY", NULL, NULL, NULL);
+	hDC = CreateDC("DISPLAY", NULL, NULL, NULL);
 	iBits = GetDeviceCaps(hDC, BITSPIXEL) * GetDeviceCaps(hDC, PLANES);
 	DeleteDC(hDC);
 	if (iBits <= 1)
@@ -175,7 +173,7 @@ BOOL SaveToFile(HBITMAP hBitmap, LPCTSTR lpszFileName)
 
 
 	GetDIBits(hDC, hBitmap, 0, (UINT)Bitmap.bmHeight, (LPSTR)lpbi + sizeof(BITMAPINFOHEADER)
-		+dwPaletteSize, (BITMAPINFO *)lpbi, DIB_RGB_COLORS);
+		+ dwPaletteSize, (BITMAPINFO *)lpbi, DIB_RGB_COLORS);
 
 	if (hOldPal)
 	{
@@ -191,11 +189,11 @@ BOOL SaveToFile(HBITMAP hBitmap, LPCTSTR lpszFileName)
 		return FALSE;
 
 	bmfHdr.bfType = 0x4D42; // "BM"
-	dwDIBSize = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+dwPaletteSize + dwBmBitsSize;
+	dwDIBSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + dwPaletteSize + dwBmBitsSize;
 	bmfHdr.bfSize = dwDIBSize;
 	bmfHdr.bfReserved1 = 0;
 	bmfHdr.bfReserved2 = 0;
-	bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER)+(DWORD)sizeof(BITMAPINFOHEADER)+dwPaletteSize;
+	bmfHdr.bfOffBits = (DWORD)sizeof(BITMAPFILEHEADER) + (DWORD)sizeof(BITMAPINFOHEADER) + dwPaletteSize;
 
 	WriteFile(fh, (LPSTR)&bmfHdr, sizeof(BITMAPFILEHEADER), &dwWritten, NULL);
 
@@ -267,15 +265,15 @@ BYTE* ConvertRGBToBMPBuffer(BYTE* Buffer, int width, int height, long* newsize)
 	long bufpos = 0;
 	long newpos = 0;
 	for (int y = 0; y < height; y++)
-	for (int x = 0; x < 3 * width; x += 3)
-	{
+		for (int x = 0; x < 3 * width; x += 3)
+		{
 		bufpos = y * 3 * width + x;     // position in original buffer
 		newpos = (height - y - 1) * psw + x;           // position in padded buffer
 
 		newbuf[newpos] = Buffer[bufpos + 2];       // swap r and b
 		newbuf[newpos + 1] = Buffer[bufpos + 1]; // g stays
 		newbuf[newpos + 2] = Buffer[bufpos];     // swap b and r
-	}
+		}
 
 	return newbuf;
 }
@@ -329,15 +327,15 @@ BYTE* ConvertBMPToRGBBuffer(BYTE* Buffer, int width, int height)
 	long bufpos = 0;
 	long newpos = 0;
 	for (int y = 0; y < height; y++)
-	for (int x = 0; x < 3 * width; x += 3)
-	{
+		for (int x = 0; x < 3 * width; x += 3)
+		{
 		newpos = y * 3 * width + x;
 		bufpos = (height - y - 1) * psw + x;
 
 		newbuf[newpos] = Buffer[bufpos + 2];
 		newbuf[newpos + 1] = Buffer[bufpos + 1];
 		newbuf[newpos + 2] = Buffer[bufpos];
-	}
+		}
 
 	return newbuf;
 }
@@ -408,14 +406,14 @@ bool SaveBMP(BYTE* Buffer, int width, int height, long paddedsize, LPCTSTR bmpfi
 	BITMAPINFOHEADER info;
 
 	// andinitialize them to zero
-	memset(&bmfh, 0, sizeof (BITMAPFILEHEADER));
-	memset(&info, 0, sizeof (BITMAPINFOHEADER));
+	memset(&bmfh, 0, sizeof(BITMAPFILEHEADER));
+	memset(&info, 0, sizeof(BITMAPINFOHEADER));
 
 	// fill the fileheader with data
 	bmfh.bfType = 0x4d42;       // 0x4d42 = 'BM'
 	bmfh.bfReserved1 = 0;
 	bmfh.bfReserved2 = 0;
-	bmfh.bfSize = sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+paddedsize;
+	bmfh.bfSize = sizeof(BITMAPFILEHEADER) + sizeof(BITMAPINFOHEADER) + paddedsize;
 	bmfh.bfOffBits = 0x36;		// number of bytes to start of bitmap bits
 
 	// fill the infoheader
@@ -443,13 +441,13 @@ bool SaveBMP(BYTE* Buffer, int width, int height, long paddedsize, LPCTSTR bmpfi
 
 	// write file header
 	unsigned long bwritten;
-	if (WriteFile(file, &bmfh, sizeof (BITMAPFILEHEADER), &bwritten, NULL) == false)
+	if (WriteFile(file, &bmfh, sizeof(BITMAPFILEHEADER), &bwritten, NULL) == false)
 	{
 		CloseHandle(file);
 		return false;
 	}
 	// write infoheader
-	if (WriteFile(file, &info, sizeof (BITMAPINFOHEADER), &bwritten, NULL) == false)
+	if (WriteFile(file, &info, sizeof(BITMAPINFOHEADER), &bwritten, NULL) == false)
 	{
 		CloseHandle(file);
 		return false;
@@ -496,7 +494,7 @@ BYTE* LoadBMP(int* width, int* height, long* size, LPCTSTR bmpfile)
 
 
 	// read file header
-	if (ReadFile(file, &bmpheader, sizeof (BITMAPFILEHEADER), &bytesread, NULL) == false)
+	if (ReadFile(file, &bmpheader, sizeof(BITMAPFILEHEADER), &bytesread, NULL) == false)
 	{
 		CloseHandle(file);
 		return NULL;
@@ -504,7 +502,7 @@ BYTE* LoadBMP(int* width, int* height, long* size, LPCTSTR bmpfile)
 
 	//read bitmap info
 
-	if (ReadFile(file, &bmpinfo, sizeof (BITMAPINFOHEADER), &bytesread, NULL) == false)
+	if (ReadFile(file, &bmpinfo, sizeof(BITMAPINFOHEADER), &bytesread, NULL) == false)
 	{
 		CloseHandle(file);
 		return NULL;
@@ -580,10 +578,10 @@ void TestBMPCopy2(LPCTSTR input, LPCTSTR output)
 	This returns a set of ordered COORDS (by Y value) of where the given BMP was found on the ScreenShot
 
 	Caveat: the width of the LOADBMP array is padded to be a multiple of 4 (WTF)
-*/
-set<COORD> ScreenShot::FindBMP(LPCTSTR testBMP)
+	*/
+std::vector<COORD> ScreenShot::FindBMP(LPCTSTR testBMP)
 {
-	set<COORD> ret;
+	vector<COORD> ret;
 	int x, y, w;
 	long s, s2;
 	BYTE * test = LoadBMP(&x, &y, &s, testBMP);
@@ -607,8 +605,8 @@ set<COORD> ScreenShot::FindBMP(LPCTSTR testBMP)
 				//Each X in BMP
 				for (int bmpX = 0; bmpX < x; bmpX++)
 				{
-						// test[ (curHeight*width + curWidth) * elementsperpixel + height*paddingperheight
-					if (   test[(bmpY*x + bmpX) * 3 + bmpY*(w - x)] == this->bmpBuffer[((ssY - bmpY)*SCREENWIDTH + (ssX + bmpX)) * 4]
+					// test[ (curHeight*width + curWidth) * elementsperpixel + height*paddingperheight
+					if (test[(bmpY*x + bmpX) * 3 + bmpY*(w - x)] == this->bmpBuffer[((ssY - bmpY)*SCREENWIDTH + (ssX + bmpX)) * 4]
 						&& test[(bmpY*x + bmpX) * 3 + bmpY*(w - x) + 1] == this->bmpBuffer[((ssY - bmpY)*SCREENWIDTH + (ssX + bmpX)) * 4 + 1]
 						&& test[(bmpY*x + bmpX) * 3 + bmpY*(w - x) + 2] == this->bmpBuffer[((ssY - bmpY)*SCREENWIDTH + (ssX + bmpX)) * 4 + 2]
 						)
@@ -634,7 +632,7 @@ set<COORD> ScreenShot::FindBMP(LPCTSTR testBMP)
 				COORD toInsert;
 				toInsert.X = ssX;
 				toInsert.Y = ssY;
-				ret.insert(toInsert);
+				ret.push_back(toInsert);
 			}
 		}
 	}
@@ -642,7 +640,7 @@ set<COORD> ScreenShot::FindBMP(LPCTSTR testBMP)
 	return ret;
 }
 
-HBITMAP ScreenShot::bitmapFromBytes(BYTE arr[],int width, int height)
+HBITMAP ScreenShot::bitmapFromBytes(BYTE arr[], int width, int height)
 {
 	auto ret = CreateBitmap(width, height, 1, 32, arr);
 	return ret;
