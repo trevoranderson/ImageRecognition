@@ -134,7 +134,7 @@ BOOL SaveToFile(HBITMAP hBitmap, LPCTSTR lpszFileName)
 
 	HANDLE fh, hDib, hPal, hOldPal = NULL;
 
-	hDC = CreateDC("DISPLAY", NULL, NULL, NULL);
+	hDC = CreateDC(L"DISPLAY", NULL, NULL, NULL);
 	iBits = GetDeviceCaps(hDC, BITSPIXEL) * GetDeviceCaps(hDC, PLANES);
 	DeleteDC(hDC);
 	if (iBits <= 1)
